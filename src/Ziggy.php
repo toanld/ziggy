@@ -23,7 +23,9 @@ class Ziggy implements JsonSerializable
     public function __construct($group = null, string $url = null)
     {
         $this->group = $group;
-
+        if(!empty(config('ziggy.url'))){
+            $this->url = config('ziggy.url');
+        }
         $this->url = rtrim($url ?? url('/'), '/');
 
         if (! static::$cache) {
