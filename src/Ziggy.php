@@ -25,8 +25,10 @@ class Ziggy implements JsonSerializable
         $this->group = $group;
         if(!empty(config('ziggy.url'))){
             $this->url = config('ziggy.url');
+        }else{
+            $this->url = url('/');
         }
-        $this->url = rtrim($url ?? url('/'), '/');
+        $this->url = rtrim($url ?? $this->url, '/');
 
         if (! static::$cache) {
             static::$cache = $this->nameKeyedRoutes();
@@ -58,7 +60,6 @@ class Ziggy implements JsonSerializable
         if (config()->has('ziggy.only')) {
             return $this->filter(config('ziggy.only'))->routes;
         }
-
         return $this->routes;
     }
 
@@ -205,10 +206,10 @@ class Ziggy implements JsonSerializable
                     ? Reflector::getParameterClassName($parameter)
                     : $parameter->getType()->getName();
                 $override = (new ReflectionClass($model))->isInstantiable() && (
-                    (new ReflectionMethod($model, 'getRouteKeyName'))->class !== Model::class
-                    || (new ReflectionMethod($model, 'getKeyName'))->class !== Model::class
-                    || (new ReflectionProperty($model, 'primaryKey'))->class !== Model::class
-                );
+                        (new ReflectionMethod($model, 'getRouteKeyName'))->class !== Model::class
+                        || (new ReflectionMethod($model, 'getKeyName'))->class !== Model::class
+                        || (new ReflectionProperty($model, 'primaryKey'))->class !== Model::class
+                    );
 
                 // Avoid booting this model if it doesn't override the default route key name
                 $bindings[$parameter->getName()] = $override ? app($model)->getRouteKeyName() : 'id';
